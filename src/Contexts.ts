@@ -13,3 +13,13 @@ export const UserContext = createContext<UserContext>({
   selectUser: null,
   setSelectUser: () => {},
 });
+
+interface RepoContext {
+  repo: Repo | null;
+  setRepo: (repos: Repo) => void;
+}
+
+export const RepoContext = createContext<RepoContext>({
+  repo: null,
+  setRepo: () => {},
+});

@@ -3,6 +3,7 @@ import "./App.css"
 import SearchUsers from "./components/SearchUsers";
 import UserList from './components/UserList';
 import { UserContext } from "./Contexts";
+import UserRepolist from "./components/UserRepoList";
 
 export default function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,6 +19,7 @@ export default function App() {
     }}>
       <SearchUsers />
       <UserList />
+      {selectUser && <UserRepolist login={selectUser.login} />}
     </UserContext.Provider>
   </div>
 }

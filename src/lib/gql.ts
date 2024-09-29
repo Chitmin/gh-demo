@@ -1,4 +1,4 @@
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
 
 export const searchUsers = gql`
   query searchUsers($name: String!) {
@@ -9,6 +9,7 @@ export const searchUsers = gql`
           login
           avatarUrl
           url
+          __typename
         }
       }
     }
@@ -17,4 +18,36 @@ export const searchUsers = gql`
 
 export function useSearchUsers<T>() {
   return useLazyQuery<T>(searchUsers);
+}
+
+export const userRepoList = gql`
+  query userRepoList($login: String!, $count: Int!, $after: String) {
+    repositoryOwner(login: $login) {
+      repositories(first: $count, after: $after) {
+        nodes {
+          id
+          name
+          stargazerCount
+          watchers {
+            totalCount
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
+      }
+    }
+  }
+`;
+
+export function useUserRepoList<T>(
+  login: string,
+  count: number,
+  after: string = ""
+) {
+  return useQuery<T>(userRepoList, { variables: { login, count, after } });
 }
