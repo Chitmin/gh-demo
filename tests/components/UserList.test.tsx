@@ -1,19 +1,30 @@
 import { render, screen, queryByAttribute } from '@testing-library/react'
 import { describe, it, expect } from 'vitest';
 import UserList from "../../src/components/UserList";
+import { UserContext } from "../../src/Contexts";
 
 describe('User List component', () => {
   it('renders without error', () => {
-    render(<UserList users={[]} />);
+    render(
+      <UserContext.Provider value={{ users: [], update: () => {} }}>
+        <UserList />
+      </UserContext.Provider>
+    );
   });
 
   it('shows empty string for empty result', async () => {
-    const dom = render(<UserList users={[]} />);
+    const dom = render(
+      <UserContext.Provider value={{ users: [], update: () => {} }}>
+        <UserList />
+      </UserContext.Provider>
+    );
 
     const getById = queryByAttribute.bind(null, 'id');
-    const div = getById(dom.container, 'user-list');
-    expect(div).not.toBeNull();
-    expect(div).toHaveTextContent('');
+    const section = getById(dom.container, 'user-list');
+    expect(section).not.toBeNull();
+    
+    const ul = getById(dom.container, 'users');
+    expect(ul).toBeNull();
   });
 
   it('shows users', async () => {
@@ -24,7 +35,11 @@ describe('User List component', () => {
       url: "http://example.com/example"
     };
 
-    render(<UserList users={[user]} />);
+    render(
+      <UserContext.Provider value={{ users: [user], update: () => {} }}>
+        <UserList />
+      </UserContext.Provider>
+  );
 
     const img = await screen.findByRole('img');
     expect(img).not.toBeNull();

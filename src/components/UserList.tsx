@@ -1,19 +1,19 @@
-import React from "react";
+import { useContext } from "react";
+import { UserContext } from "../Contexts";
 
-interface Props {
-    users: User[]
-  }
+const UserList= () => {
+    const { users } = useContext(UserContext);
 
-const UserList: React.FC<Props> = ({users}) => {
-    return <div id="user-list">
+    return <section id="user-list">
+        <h1>Users</h1>
         {users.length ? 
-        <ul>
+        <ul id="users">
             {users.map((user) => <li key={user.id}>
                 <img src={user.avatarUrl} alt={user.login} />
                 <a href={user.url} target="_blank">{user.login}</a>
             </li>)}
         </ul> : ""}
-    </div>
+    </section>
 }
 
 export default UserList;

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useContext } from "react";
 import { useSearchUsers } from '../lib/gql';
-import UserList from "./UserList";
+import { UserContext } from "../Contexts";
 
 interface UserSearchResult {
     search: {
@@ -9,7 +9,7 @@ interface UserSearchResult {
 }
 
 const SearchUsers = () => {
-    const [users, setUsers] = useState<User[]>([])
+    const context = useContext(UserContext);
     const [searchUsers, { loading, error }] = useSearchUsers<UserSearchResult>();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -21,12 +21,16 @@ const SearchUsers = () => {
                 variables: { name: username },
             })
 
-            setUsers(response.data?.search?.nodes || [])
+            context.update(response.data?.search?.nodes || [])
         }
     };
 
-    return <div>
-        <form name="search-users" onSubmit={handleSubmit}>
+    return <div className="w-full">
+        <form
+            className="flex"
+            name="search-users"
+            onSubmit={handleSubmit}
+        >
             <input
                 type="text"
                 placeholder="Search for users"
@@ -35,10 +39,7 @@ const SearchUsers = () => {
             <button type='submit'>
                 {loading ? "Loading..." : "Search"}
             </button>
-            {error
-                ? <p>{error.message}</p>
-                : <UserList users={users} />
-            }
+            {error ? <p>{error.message}</p> : ""}
         </form>
     </div>;
 }
