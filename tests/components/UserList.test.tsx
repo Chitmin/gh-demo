@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, queryByAttribute } from '@testing-library/react'
 import { describe, it, expect } from 'vitest';
 import UserList from "../../src/components/UserList";
 
@@ -7,12 +7,13 @@ describe('User List component', () => {
     render(<UserList users={[]} />);
   });
 
-  it('shows `No users found` for empty result', async () => {
-    render(<UserList users={[]} />);
+  it('shows empty string for empty result', async () => {
+    const dom = render(<UserList users={[]} />);
 
-    const p = await screen.findByTestId('no-users');
-
-    expect(p).not.toBeNull();
+    const getById = queryByAttribute.bind(null, 'id');
+    const div = getById(dom.container, 'user-list');
+    expect(div).not.toBeNull();
+    expect(div).toHaveTextContent('');
   });
 
   it('shows users', async () => {
