@@ -25,7 +25,7 @@ const SearchUsers = () => {
                 variables: { name: username },
             })
 
-            context.update(response.data?.search?.nodes || [])
+            context.setUsers(response.data?.search?.nodes || [])
         }
     };
 

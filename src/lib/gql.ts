@@ -2,7 +2,7 @@ import { gql, useLazyQuery } from "@apollo/client";
 
 export const searchUsers = gql`
   query searchUsers($name: String!) {
-    search(query: $name, type: USER, first: 30) {
+    search(query: $name, type: USER, first: 5) {
       nodes {
         ... on User {
           id
