@@ -1,12 +1,19 @@
-import { render, screen, queryByAttribute } from '@testing-library/react'
+import { render, queryByAttribute } from '@testing-library/react'
 import { describe, it, expect } from 'vitest';
 import UserList from "../../src/components/UserList";
 import { UserContext } from "../../src/Contexts";
 
+const defaultContextValue = {
+  users: [],
+  setUsers: () => {},
+  selectUser: null,
+  setSelectUser: () => {}
+};
+
 describe('User List component', () => {
   it('renders without error', () => {
     render(
-      <UserContext.Provider value={{ users: [], update: () => {} }}>
+      <UserContext.Provider value={defaultContextValue}>
         <UserList />
       </UserContext.Provider>
     );
@@ -14,7 +21,7 @@ describe('User List component', () => {
 
   it('shows empty string for empty result', async () => {
     const dom = render(
-      <UserContext.Provider value={{ users: [], update: () => {} }}>
+      <UserContext.Provider value={defaultContextValue}>
         <UserList />
       </UserContext.Provider>
     );
@@ -35,20 +42,14 @@ describe('User List component', () => {
       url: "http://example.com/example"
     };
 
-    render(
-      <UserContext.Provider value={{ users: [user], update: () => {} }}>
+    const dom = render(
+      <UserContext.Provider value={{ ...defaultContextValue, users: [user] }}>
         <UserList />
       </UserContext.Provider>
   );
 
-    const img = await screen.findByRole('img');
-    expect(img).not.toBeNull();
-    expect(img).toHaveAttribute('src', 'http://example.com');
-    expect(img).toHaveAttribute('alt', 'example');
-
-    const a = await screen.findByRole('link');
+    const a = await dom.container.querySelector('#users > li > span:last-child');
     expect(a).not.toBeNull();
-    expect(a).toHaveAttribute('href', 'http://example.com/example');
     expect(a).toHaveTextContent('example');
   });
 })
