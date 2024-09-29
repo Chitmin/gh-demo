@@ -1,9 +1,9 @@
-import { ApolloProvider } from "@apollo/client";
-import client from "./lib/client";
 import "./App.css"
+import SearchUsers from "./components/SearchUsers";
 
 export default function App() {
-  return <ApolloProvider client={client}>
+  return <>
     <h1 className="text-3xl font-bold">Search</h1>
-    </ApolloProvider>
+    <SearchUsers />
+  </>
 }
