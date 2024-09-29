@@ -7,12 +7,17 @@ interface User {
 }
 
 interface Repo {
-  id;
+  id: string;
   name: string;
   stargazerCount: number;
   watchers: {
     totalCount: number;
   };
+}
+
+interface Issue {
+  id: string;
+  title: string;
 }
 
 interface PageInfo {

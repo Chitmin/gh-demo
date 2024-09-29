@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { gql, useLazyQuery, useQuery, useMutation } from "@apollo/client";
 
 export const searchUsers = gql`
   query searchUsers($name: String!) {
@@ -50,4 +50,42 @@ export function useUserRepoList<T>(
   after: string = ""
 ) {
   return useQuery<T>(userRepoList, { variables: { login, count, after } });
+}
+
+export const repository = gql`
+  query getRepository($owner: String!, $name: String!) {
+    repository(owner: $owner, name: $name) {
+      id
+      issues(first: 100, filterBy: { states: OPEN }) {
+        nodes {
+          id
+          title
+        }
+      }
+    }
+  }
+`;
+
+export function useRepository<T>(owner: string, name: string) {
+  return useQuery<T>(repository, { variables: { owner, name } });
+}
+
+export const createIssue = gql`
+  mutation createIssue($repositoryId: ID!, $title: String!, $body: String!) {
+    createIssue(
+      input: { repositoryId: $repositoryId, title: $title, body: $body }
+    ) {
+      issue {
+        id
+        number
+        title
+        body
+        url
+      }
+    }
+  }
+`;
+
+export function useCreateIssue() {
+  return useMutation(createIssue);
 }

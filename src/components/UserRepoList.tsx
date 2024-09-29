@@ -2,7 +2,8 @@ import { useUserRepoList } from "@/lib/gql";
 // import { memo } from "react";
 import { Loader } from "lucide-react";
 import Pager from "./Pager";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { RepoContext } from "@/Contexts";
 
 interface UserRepoResult {
   repositoryOwner: {
@@ -26,6 +27,7 @@ const UserRepolist: React.FC<{
   );
 
   const [fetchLoading, setFetchLoading] = useState(false);
+  const { setRepo } = useContext(RepoContext);
 
   if (error) {
     return <p className="text-red-500 text-sm pt-1">{error.message}</p>;
@@ -49,7 +51,7 @@ const UserRepolist: React.FC<{
                   key={repo.id}
                   className="flex flex-wrap justify-between hover:cursor-pointer hover:shadow-sm p-2 mb-4"
                   onClick={() => {
-                    //
+                    setRepo(repo);
                   }}
                 >
                   <div>{repo.name}</div>

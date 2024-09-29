@@ -16,7 +16,7 @@ export const UserContext = createContext<UserContext>({
 
 interface RepoContext {
   repo: Repo | null;
-  setRepo: (repos: Repo) => void;
+  setRepo: (repo: Repo | null) => void;
 }
 
 export const RepoContext = createContext<RepoContext>({
