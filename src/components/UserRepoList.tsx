@@ -1,10 +1,10 @@
 import { useUserRepoList } from "@/lib/gql";
-import { memo } from "react";
 import { Loader, StepBackIcon, StepForwardIcon } from "lucide-react";
-import { useContext, useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { RepoContext } from "@/Contexts";
 import { Button } from "@/components/ui/button";
 import { useTransition, animated } from "@react-spring/web";
+import { useCollectionChunks } from "@/hooks/useCollectionChunks";
 
 interface UserRepoResult {
   repositoryOwner: {
@@ -16,85 +16,11 @@ interface UserRepoResult {
   };
 }
 
-interface PageChunks {
-  chunks: Record<number, Repo[]>;
-  current: number;
-  found: boolean;
-  length: number;
-}
-
-interface Action {
-  type: "next" | "prev" | "update";
-  nextItems?: Repo[];
-}
-
-function pageReducer(page: PageChunks, action: Action) {
-  const { type } = action;
-
-  switch (type) {
-    case "next":
-      if (page.current + 1 in page.chunks) {
-        return {
-          chunks: { ...page.chunks },
-          current: page.current + 1,
-          found: true,
-          length: Object.keys(page.chunks).length,
-        };
-      } else {
-        return {
-          chunks: { ...page.chunks },
-          current: page.current,
-          found: false,
-          length: Object.keys(page.chunks).length,
-        };
-      }
-    case "prev":
-      if (page.current === 1) {
-        return {
-          chunks: { ...page.chunks },
-          current: page.current,
-          found: page.found,
-          length: Object.keys(page.chunks).length,
-        };
-      }
-
-      return {
-        chunks: { ...page.chunks },
-        current: page.current - 1,
-        found: page.current - 1 in page.chunks,
-        length: Object.keys(page.chunks).length,
-      };
-    case "update":
-      if (page.current + 1 in page.chunks) {
-        return {
-          chunks: { ...page.chunks },
-          current: page.current + 1,
-          found: true,
-          length: Object.keys(page.chunks).length,
-        };
-      }
-
-      return {
-        chunks: action?.nextItems
-          ? {
-              ...page.chunks,
-              [page.current + 1]: action?.nextItems,
-            }
-          : { ...page.chunks },
-        current: page.current + 1,
-        found: true,
-        length: Object.keys(page.chunks).length,
-      };
-    default:
-      return page;
-  }
-}
-
 const repoCount = 10;
 
 const UserRepolist: React.FC<{
   login: string;
-}> = memo(({ login }) => {
+}> = ({ login }) => {
   const { loading, data, error, fetchMore } = useUserRepoList<UserRepoResult>(
     login,
     repoCount,
@@ -107,21 +33,21 @@ const UserRepolist: React.FC<{
     setCursor(data?.repositoryOwner?.repositories?.pageInfo?.endCursor || "");
   }, [data]);
 
-  const [page, dispatch] = useReducer(pageReducer, {
-    chunks: {},
-    current: 0,
-    found: false,
-    length: 0,
-  });
+  const [page, dispatch] = useCollectionChunks<Repo>(login);
 
   useEffect(() => {
-    if (data?.repositoryOwner?.repositories?.nodes) {
-      dispatch({
-        type: "update",
-        nextItems: data?.repositoryOwner?.repositories?.nodes,
-      });
+    if (page.key !== login) {
+      dispatch({ type: "reset", key: login });
+    } else {
+      if (data?.repositoryOwner?.repositories?.nodes) {
+        dispatch({
+          type: "update",
+          nextItems: data?.repositoryOwner?.repositories?.nodes,
+        });
+      }
     }
-  }, [data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, login]);
 
   const transitions = useTransition(page, {
     from: { opacity: 0, transform: "translate3d(100%,0,0)" },
@@ -221,7 +147,7 @@ const UserRepolist: React.FC<{
                   {fetchLoading ? (
                     <Loader className="h-4 w-4 animate-spin" />
                   ) : (
-                    <StepForwardIcon onClick={() => setRepo(null)} />
+                    <StepForwardIcon />
                   )}
                 </Button>
               )}
@@ -231,6 +157,6 @@ const UserRepolist: React.FC<{
       )}
     </>
   );
-});
+};
 
 export default UserRepolist;

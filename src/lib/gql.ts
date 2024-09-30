@@ -53,21 +53,37 @@ export function useUserRepoList<T>(
 }
 
 export const repository = gql`
-  query getRepository($owner: String!, $name: String!) {
+  query getRepository(
+    $owner: String!
+    $name: String!
+    $count: Int!
+    $after: String
+  ) {
     repository(owner: $owner, name: $name) {
       id
-      issues(first: 100, filterBy: { states: OPEN }) {
+      issues(first: $count, after: $after, filterBy: { states: OPEN }) {
         nodes {
           id
           title
         }
+        pageInfo {
+          endCursor
+          hasNextPage
+          hasPreviousPage
+          startCursor
+        }
+        totalCount
       }
     }
   }
 `;
 
-export function useRepository<T>(owner: string, name: string) {
-  return useQuery<T>(repository, { variables: { owner, name } });
+export function useRepository<T>(
+  owner: string,
+  name: string,
+  count: number = 10
+) {
+  return useQuery<T>(repository, { variables: { owner, name, count } });
 }
 
 export const createIssue = gql`
