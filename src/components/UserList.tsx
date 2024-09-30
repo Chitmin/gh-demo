@@ -1,9 +1,10 @@
 import { useContext } from "react";
-import { UserContext } from "../Contexts";
+import { RepoContext, UserContext } from "../Contexts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const UserList = () => {
   const { users, selectUser, setSelectUser } = useContext(UserContext);
+  const { setRepo } = useContext(RepoContext);
 
   const styles = (user: User) =>
     user.id === selectUser?.id
@@ -26,7 +27,10 @@ const UserList = () => {
               <li
                 key={user.id}
                 className="flex flex-wrap flex-col items-center hover:cursor-pointer"
-                onClick={() => setSelectUser(user)}
+                onClick={() => {
+                  setSelectUser(user);
+                  setRepo(null);
+                }}
               >
                 <Avatar className={styles(user).avatar}>
                   <AvatarImage src={user.avatarUrl} alt={user.login} />

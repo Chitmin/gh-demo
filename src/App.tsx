@@ -24,8 +24,8 @@ export default function App() {
         }}
       >
         <SearchUsers />
-        <UserList />
         <RepoContext.Provider value={{ repo, setRepo }}>
+          <UserList />
           {selectUser && !repo && <UserRepolist login={selectUser.login} />}
           {selectUser && repo && (
             <IssueList owner={selectUser?.login} repo={repo} />
