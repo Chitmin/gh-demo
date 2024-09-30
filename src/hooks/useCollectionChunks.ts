@@ -1,3 +1,4 @@
+import { chunkArray } from "@/lib/utils";
 import { useReducer } from "react";
 
 interface CollectionChunks<T> {
@@ -26,7 +27,18 @@ interface ResetAction {
   key: string | number;
 }
 
-type Action<T> = NextAction | PrevAction | UpdateAction<T> | ResetAction;
+interface PrependAction<T> {
+  type: "prepend";
+  item: T;
+  size?: number;
+}
+
+type Action<T> =
+  | NextAction
+  | PrevAction
+  | UpdateAction<T>
+  | ResetAction
+  | PrependAction<T>;
 
 function collectionReducer<T>(page: CollectionChunks<T>, action: Action<T>) {
   const { type } = action;
@@ -78,6 +90,15 @@ function collectionReducer<T>(page: CollectionChunks<T>, action: Action<T>) {
         : { ...page.chunks };
       newCollection.current = page.current + 1;
       newCollection.found = true;
+      return newCollection;
+    case "prepend":
+      newCollection.chunks = chunkArray(
+        [action.item, ...Object.values(page.chunks).flat()],
+        action?.size || 10
+      ).reduce((result: Record<number, T[]>, chunks, index) => {
+        result[index + 1] = chunks;
+        return result;
+      }, {});
       return newCollection;
     case "reset":
       return {

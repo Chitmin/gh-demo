@@ -62,6 +62,7 @@ const IssueList: React.FC<{
         description: response.errors[0].message,
       });
     } else {
+      dispatch({ type: "prepend", item: response.data?.createIssue?.issue });
       toast({
         description: "Issue created successfully",
       });
