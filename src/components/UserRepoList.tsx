@@ -152,12 +152,12 @@ const UserRepolist: React.FC<{
                 return (
                   <animated.ul
                     style={style}
-                    className="flex flex-col flex-wrap justify-between"
+                    className="flex flex-col flex-wrap justify-between divide-y"
                   >
                     {(page.chunks[page.current] || []).map((repo) => (
                       <li
                         key={repo.id}
-                        className="flex flex-wrap justify-between hover:cursor-pointer hover:shadow p-2 mb-4"
+                        className="flex flex-wrap justify-between hover:cursor-pointer hover:font-bold p-2 mb-4"
                         onClick={() => {
                           setRepo(repo);
                         }}

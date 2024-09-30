@@ -1,6 +1,6 @@
 import { RepoContext } from "@/Contexts";
 import { useCreateIssue, useRepository } from "@/lib/gql";
-import { Loader, StepBackIcon, PlusIcon } from "lucide-react";
+import { Loader, ArrowLeft, PlusIcon } from "lucide-react";
 import { useContext, useState } from "react";
 import {
   Dialog,
@@ -57,71 +57,78 @@ const IssueList: React.FC<{
         </div>
       ) : (
         <div>
-          <header className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold mb-4">Issues</h1>
-            <div className="flex">
-              <StepBackIcon
-                className="h-4 w-4 ml-2"
-                onClick={() => setRepo(null)}
-              />
-
-              <Dialog>
-                <DialogTrigger>
-                  <PlusIcon className="h-4 w-4 ml-2" />
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>New Issue</DialogTitle>
-                  </DialogHeader>
-                  {issueLoading ? (
-                    <Loader className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="name" className="text-right">
-                            Title
-                          </Label>
-                          <Input
-                            id="title"
-                            className="col-span-3"
-                            onChange={(e) => setTitle(e.target.value)}
-                          />
-                        </div>
-
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="username" className="text-right">
-                            Body
-                          </Label>
-                          <Textarea
-                            id="body"
-                            className="col-span-3"
-                            onChange={(e) => setBody(e.target.value)}
-                          />
-                        </div>
+          <header className="flex justify-between items-center mb-4">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => setRepo(null)}
+              className="mr-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-2xl font-bold w-auto text-left">Issues</h1>
+            <Dialog>
+              <DialogTrigger>
+                <PlusIcon className="h-4 w-4 ml-2" />
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>New Issue</DialogTitle>
+                </DialogHeader>
+                {issueLoading ? (
+                  <Loader className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Title
+                        </Label>
+                        <Input
+                          id="title"
+                          className="col-span-3"
+                          onChange={(e) => setTitle(e.target.value)}
+                        />
                       </div>
-                      <DialogFooter>
-                        <Button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleIssueCreate(e);
-                          }}
-                        >
-                          Save
-                        </Button>
-                      </DialogFooter>
-                    </>
-                  )}
-                </DialogContent>
-              </Dialog>
-            </div>
+
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="username" className="text-right">
+                          Body
+                        </Label>
+                        <Textarea
+                          id="body"
+                          className="col-span-3"
+                          onChange={(e) => setBody(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleIssueCreate(e);
+                        }}
+                      >
+                        Save
+                      </Button>
+                    </DialogFooter>
+                  </>
+                )}
+              </DialogContent>
+            </Dialog>
           </header>
           {issueError ? (
             <p className="text-red-500 text-sm pt-1">{issueError.message}</p>
           ) : (
-            <ul id="issues" className="flex flex-col">
+            <ul id="issues" className="flex flex-col divide-y">
               {data?.repository?.issues?.nodes?.map((issue) => (
-                <li key={issue.id}>{issue.title}</li>
+                <li
+                  key={issue.id}
+                  className="flex flex-wrap justify-between p-2 mb-4"
+                >
+                  {issue.title}
+                </li>
               ))}
             </ul>
           )}
