@@ -61,7 +61,12 @@ export const repository = gql`
   ) {
     repository(owner: $owner, name: $name) {
       id
-      issues(first: $count, after: $after, filterBy: { states: OPEN }) {
+      issues(
+        first: $count
+        after: $after
+        filterBy: { states: OPEN }
+        orderBy: { field: UPDATED_AT, direction: DESC }
+      ) {
         nodes {
           id
           title
