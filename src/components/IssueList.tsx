@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCollectionChunks } from "@/hooks/useCollectionChunks";
+import { useToast } from "@/hooks/use-toast";
 
 interface RepoWithOpenIssuesResult {
   repository: {
@@ -37,6 +38,7 @@ const IssueList: React.FC<{
   owner: string;
   repo: Repo;
 }> = ({ owner, repo }) => {
+  const { toast } = useToast();
   const { loading, data, error, fetchMore } =
     useRepository<RepoWithOpenIssuesResult>(owner, repo.name);
 
@@ -49,9 +51,21 @@ const IssueList: React.FC<{
 
   const { setRepo } = useContext(RepoContext);
 
-  const handleIssueCreate = (e: React.FormEvent) => {
+  const handleIssueCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    createIssue({ variables: { repositoryId: repo.id, title, body } });
+    const response = await createIssue({
+      variables: { repositoryId: repo.id, title, body },
+    });
+
+    if (response.errors) {
+      toast({
+        description: response.errors[0].message,
+      });
+    } else {
+      toast({
+        description: "Issue created successfully",
+      });
+    }
   };
 
   const [page, dispatch] = useCollectionChunks<Issue>(repo.id);
@@ -115,7 +129,7 @@ const IssueList: React.FC<{
                 ) : (
                   <>
                     <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
+                      <div className="grid grid-cols-4 items-top gap-4">
                         <Label htmlFor="name" className="text-right">
                           Title
                         </Label>
@@ -126,13 +140,13 @@ const IssueList: React.FC<{
                         />
                       </div>
 
-                      <div className="grid grid-cols-4 items-center gap-4">
+                      <div className="grid grid-cols-4 items-top gap-4">
                         <Label htmlFor="username" className="text-right">
                           Body
                         </Label>
                         <Textarea
                           id="body"
-                          className="col-span-3"
+                          className="col-span-3 min-h-32"
                           onChange={(e) => setBody(e.target.value)}
                         />
                       </div>
